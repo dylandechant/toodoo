@@ -1,6 +1,6 @@
 class CreateLists < ActiveRecord::Migration
   def self.up
-    create_table :todolist do |t|
+    create_table :todo_lists do |t|
       t.integer :user_id
       t.string :name
       t.timestamps
@@ -8,6 +8,6 @@ class CreateLists < ActiveRecord::Migration
   end
 
   def self.down
-    drop_table :todolist
+    drop_table :todo_lists
   end
 end

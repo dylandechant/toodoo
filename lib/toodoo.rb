@@ -3,14 +3,19 @@ require "toodoo/init_db"
 require 'highline/import'
 require 'pry'
 
+
 module Toodoo
   class User < ActiveRecord::Base
+    has_many :todolists
   end
 
   class TodoList < ActiveRecord::Base
+    belongs_to :user
+    has_many :todoitems
   end
 
   class TodoItem < ActiveRecord::Base
+    belongs_to :todolist
   end
 end
 
@@ -60,6 +65,8 @@ class TooDooApp
     # TODO: This should create a new todo list by getting input from the user.
     # The user should not have to tell you their id.
     # Create the todo list in the database and update the @todos variable.
+    list_name = ask("What would you like to title your list?")
+    @todos = Toodoo::TodoList.create(:name => list_name, :user_id => @user.id)
   end
 
   def pick_todo_list
@@ -78,11 +85,23 @@ class TooDooApp
   def delete_todo_list
     # TODO: This should confirm that the user wants to delete the todo list.
     # If they do, it should destroy the current todo list and set @todos to nil.
+    choices = 'yn'
+    delete = ask("Are you sure you wish to delete the list? (yn)") do |q|
+      q.validate = /\A[#{choices}]\Z/
+      q.character = true
+      q.confirm = true
+    end
+    if delete == 'y'
+      @todos.destroy
+      @todos = nil
+    end
   end
 
   def new_task
     # TODO: This should create a new task on the current user's todo list.
     # It must take any necessary input from the user. A due date is optional.
+    new_item = ask("What task would you like to add?")
+    Toodoo::TodoItem.create(:name => new_item, :finished => false, :todo_list_id => @todos.id)
   end
 
   ## NOTE: For the next 3 methods, make sure the change is saved to the database.
@@ -90,6 +109,15 @@ class TooDooApp
     # TODO: This should display the todos on the current list in a menu
     # similarly to pick_todo_list. Once they select a todo, the menu choice block
     # should update the todo to be completed.
+    # puts Toodoo::TodoItem.find_by todo_list_id: @user.id
+
+    Toodoo::TodoItem.where(todo_list_id: @todos.id).each do |x|
+      if x.duedate == nil
+        puts x.name
+      else
+        puts "#{x.name} \t #{x.duedate}"
+      end
+    end
   end
 
   def change_due_date
