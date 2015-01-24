@@ -6,6 +6,12 @@ require 'pry'
 module Toodoo
   class User < ActiveRecord::Base
   end
+
+  class TodoList < ActiveRecord::Base
+  end
+
+  class TodoItem < ActiveRecord::Base
+  end
 end
 
 class TooDooApp
