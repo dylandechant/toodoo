@@ -6,6 +6,7 @@ gemspec
 gem 'highline'
 gem 'activerecord'
 gem 'sqlite3'
+gem 'colorize'
 
 group :development do
   gem 'pry'
